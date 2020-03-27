@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">NutritionNow</string>
+    <string name="search_button_text">Search</string>
+    <string name="search_text_text">Search for...</string>
+    <string name="search_title_text">Enter your search terms:</string>
+    <string name="search_text_hint">Enter the food you\'re looking for.</string>
+</resources>
