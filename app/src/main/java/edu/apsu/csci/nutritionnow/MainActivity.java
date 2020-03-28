@@ -4,6 +4,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,7 +24,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -68,7 +68,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
 
         if (v == findViewById(R.id.go_recipe_button)) {
-            //switch activity here
+            Intent intent = new Intent(getBaseContext(),RecipeActivity.class);
+            startActivity(intent);
         }
 
     }
