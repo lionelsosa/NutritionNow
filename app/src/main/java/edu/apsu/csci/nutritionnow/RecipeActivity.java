@@ -45,12 +45,8 @@ public class RecipeActivity extends AppCompatActivity {
         recipeIDs = intent.getIntegerArrayListExtra("recipeItems");
 
         for (int i = 0; i < recipeIDs.size(); i++){
-            Log.d("Value", "Values in " + i + ": " + recipeIDs.get(i));
+            getIngredient(recipeIDs.get(i));
         }
-
-
-        downloadRecipeItem = new RecipeItemsDownload();
-        downloadRecipeItem.execute();
 
         Button back_button = findViewById(R.id.add_ingredient_button);
         back_button.setOnClickListener(new View.OnClickListener() {
@@ -69,6 +65,16 @@ public class RecipeActivity extends AppCompatActivity {
 
     private RecipeItemsDownload downloadRecipeItem; //second API
 
+    private void getIngredient(int id){
+
+        Uri.Builder builder = Uri.parse("https://api.nal.usda.gov/fdc/v1/" + id).buildUpon();
+        builder.appendQueryParameter("api_key", getResources().getString(R.string.api_key));
+        search_url = builder.toString();
+
+        downloadRecipeItem = new RecipeItemsDownload();
+        downloadRecipeItem.execute();
+    }
+
     public void parseIngredients(){
 
 
@@ -84,63 +90,58 @@ public class RecipeActivity extends AppCompatActivity {
                 String portionUnits = "";
                 int portionSize = 0;
 
-                for (int i = 0; i < recipeIDs.size(); i++) {
-                    Uri.Builder builder = Uri.parse("https://api.nal.usda.gov/fdc/v1/" + recipeIDs.get(i)).buildUpon();
-                    builder.appendQueryParameter("api_key", getResources().getString(R.string.api_key));
-                    search_url = builder.toString();
 
-                    URL url = new URL(search_url);
-                    HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+                URL url = new URL(search_url);
+                HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
 
-                    InputStream is = connection.getInputStream();
-                    InputStreamReader isr = new InputStreamReader(is);
-                    BufferedReader br = new BufferedReader(isr);
+                InputStream is = connection.getInputStream();
+                InputStreamReader isr = new InputStreamReader(is);
+                BufferedReader br = new BufferedReader(isr);
 
-                    StringBuilder jsonData = new StringBuilder();
-                    String line;
-                    //Read the data
-                    while ((line = br.readLine()) != null) {
-                        jsonData.append(line);
-                    }
-
-
-                    //Parse root object
-                    JSONObject rootObject = new JSONObject(jsonData.toString());
-                    //Parse nutrients
-                    JSONArray nutrients = rootObject.getJSONArray("foodNutrients");
-                    String description = rootObject.getString("description");
-
-                    JSONArray nutrientInputs = rootObject.getJSONArray("inputFoods");
-                    JSONObject nutrientInputFirst = nutrientInputs.getJSONObject(0);
-                    portionSize = nutrientInputFirst.getInt("amount");
-                    portionUnits = nutrientInputFirst.getString("unit");
-
-
-                    //parse individual results
-                    for (int j = 0; j < nutrients.length(); j++) {
-                        JSONObject nutrient = nutrients.getJSONObject(i);
-                        JSONObject nutrientData = nutrient.getJSONObject("nutrient");
-
-                        //parse values
-                        String nutrientName = nutrientData.getString("name");
-                        String nutrientUnits = nutrientData.getString("unitName");
-
-                        int nutrientAmount = nutrient.getInt("amount");
-
-
-                        //assign value to nutrients wanted
-                        switch (nutrientName){
-                            case "Energy":
-                                cals = nutrientAmount;
-                                break;
-                        }
-                    }
-
-                    recipeItems.add(new FoodItemExtended(description, cals, portionSize, portionUnits));
-
-                    connection.disconnect();
-
+                StringBuilder jsonData = new StringBuilder();
+                String line;
+                //Read the data
+                while ((line = br.readLine()) != null) {
+                    jsonData.append(line);
                 }
+
+
+                //Parse root object
+                JSONObject rootObject = new JSONObject(jsonData.toString());
+                //Parse nutrients
+                JSONArray nutrients = rootObject.getJSONArray("foodNutrients");
+                String description = rootObject.getString("description");
+
+                JSONArray nutrientInputs = rootObject.getJSONArray("inputFoods");
+                JSONObject nutrientInputFirst = nutrientInputs.getJSONObject(0);
+                portionSize = nutrientInputFirst.getInt("amount");
+                portionUnits = nutrientInputFirst.getString("unit");
+
+
+                //parse individual results
+                for (int i = 0; i < nutrients.length(); i++) {
+                    JSONObject nutrient = nutrients.getJSONObject(i);
+                    JSONObject nutrientData = nutrient.getJSONObject("nutrient");
+
+                    //parse values
+                    String nutrientName = nutrientData.getString("name");
+                    String nutrientUnits = nutrientData.getString("unitName");
+
+                    int nutrientAmount = nutrient.getInt("amount");
+
+
+                    //assign value to nutrients wanted
+                    switch (nutrientName){
+                        case "Energy":
+                            cals = nutrientAmount;
+                            break;
+                    }
+                }
+
+                recipeItems.add(new FoodItemExtended(description, cals, portionSize, portionUnits));
+
+                connection.disconnect();
+
 
 
             } catch (MalformedURLException e) {
@@ -156,6 +157,9 @@ public class RecipeActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(List item) {
+
+            Toast.makeText(getApplicationContext(), "Ingredients added:" + recipeItems.size(),Toast.LENGTH_SHORT).show();
+
         }
     }
     public class FoodItemExtended {
