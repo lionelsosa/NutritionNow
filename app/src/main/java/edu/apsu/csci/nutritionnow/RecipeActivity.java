@@ -31,14 +31,14 @@ import javax.net.ssl.HttpsURLConnection;
 public class RecipeActivity extends AppCompatActivity {
 
     ArrayList<Integer> recipeIDs = new ArrayList<>();
+
     List<FoodItemExtended> recipeItems = new ArrayList<>();
     String search_url = "";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe);
-        ListView IL = findViewById(R.id.ingredientList);
+
         ListView NL = findViewById(R.id.nutritionList);
 
         Intent intent = getIntent();
@@ -46,7 +46,15 @@ public class RecipeActivity extends AppCompatActivity {
 
         for (int i = 0; i < recipeIDs.size(); i++){
             getIngredient(recipeIDs.get(i));
+
         }
+        //moved to function
+        displayIngredients();
+        /*
+        ArrayAdapter<String> aa = new ArrayAdapter(this,
+                android.R.layout.simple_list_item_1,results);
+        IL.setAdapter(aa);
+         */
 
         Button back_button = findViewById(R.id.add_ingredient_button);
         back_button.setOnClickListener(new View.OnClickListener() {
@@ -56,19 +64,17 @@ public class RecipeActivity extends AppCompatActivity {
             }
         });
     }
-
-
-    @Override
-    public void onBackPressed() {
-        finish();
-    }
+        @Override
+        public void onBackPressed() {
+            finish();
+        }
 
     private RecipeItemsDownload downloadRecipeItem; //second API
 
     private void getIngredient(int id){
 
         Uri.Builder builder = Uri.parse("https://api.nal.usda.gov/fdc/v1/" + id).buildUpon();
-        builder.appendQueryParameter("api_key", getResources().getString(R.string.api_key));
+        builder.appendQueryParameter("api_key", "");
         search_url = builder.toString();
 
         downloadRecipeItem = new RecipeItemsDownload();
@@ -182,6 +188,14 @@ public class RecipeActivity extends AppCompatActivity {
             units = us;
         }
     }
-
+    public void displayIngredients(){
+        String[] results = new String[recipeItems.size()];
+        for (int i = 0; i < recipeItems.size(); i++ ){
+            results[i] = recipeItems.get(i).description;
+        }
+        ListView IL = findViewById(R.id.ingredientList);
+        ArrayAdapter<String> aa = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, results);
+        IL.setAdapter(aa);
+    }
 
 }
