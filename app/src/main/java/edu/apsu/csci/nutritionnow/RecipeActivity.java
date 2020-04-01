@@ -31,31 +31,33 @@ import javax.net.ssl.HttpsURLConnection;
 public class RecipeActivity extends AppCompatActivity {
 
     ArrayList<Integer> recipeIDs = new ArrayList<>();
-
+    //ArrayList<String> results = new ArrayList<>();
     List<FoodItemExtended> recipeItems = new ArrayList<>();
+    String[]results;
     String search_url = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe);
 
-        ListView NL = findViewById(R.id.nutritionList);
-
         Intent intent = getIntent();
         recipeIDs = intent.getIntegerArrayListExtra("recipeItems");
 
-        for (int i = 0; i < recipeIDs.size(); i++){
-            getIngredient(recipeIDs.get(i));
 
-        }
-        //moved to function
-        displayIngredients();
-        /*
-        ArrayAdapter<String> aa = new ArrayAdapter(this,
-                android.R.layout.simple_list_item_1,results);
-        IL.setAdapter(aa);
-         */
+        downloadRecipeItem = new RecipeItemsDownload();
+        downloadRecipeItem.execute();
 
+/*
+        Button Show_button = findViewById(R.id.showButton);
+        Show_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //moved to function
+
+            }
+        });
+
+ */
         Button back_button = findViewById(R.id.add_ingredient_button);
         back_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,12 +75,7 @@ public class RecipeActivity extends AppCompatActivity {
 
     private void getIngredient(int id){
 
-        Uri.Builder builder = Uri.parse("https://api.nal.usda.gov/fdc/v1/" + id).buildUpon();
-        builder.appendQueryParameter("api_key", "");
-        search_url = builder.toString();
 
-        downloadRecipeItem = new RecipeItemsDownload();
-        downloadRecipeItem.execute();
     }
 
     public void parseIngredients(){
@@ -96,58 +93,63 @@ public class RecipeActivity extends AppCompatActivity {
                 String portionUnits = "";
                 int portionSize = 0;
 
-
-                URL url = new URL(search_url);
-                HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-
-                InputStream is = connection.getInputStream();
-                InputStreamReader isr = new InputStreamReader(is);
-                BufferedReader br = new BufferedReader(isr);
-
-                StringBuilder jsonData = new StringBuilder();
-                String line;
-                //Read the data
-                while ((line = br.readLine()) != null) {
-                    jsonData.append(line);
-                }
+                for (int i = 0; i < recipeIDs.size(); i++) {
+                    Uri.Builder builder = Uri.parse("https://api.nal.usda.gov/fdc/v1/" + recipeIDs.get(i)).buildUpon();
+                    builder.appendQueryParameter("api_key", "BbI0EzK2pxqIyVqnjcCtp5Eat3Om2hHlIjqSRvaI");
+                    search_url = builder.toString();
 
 
-                //Parse root object
-                JSONObject rootObject = new JSONObject(jsonData.toString());
-                //Parse nutrients
-                JSONArray nutrients = rootObject.getJSONArray("foodNutrients");
-                String description = rootObject.getString("description");
+                    URL url = new URL(search_url);
+                    HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
 
-                JSONArray nutrientInputs = rootObject.getJSONArray("inputFoods");
-                JSONObject nutrientInputFirst = nutrientInputs.getJSONObject(0);
-                portionSize = nutrientInputFirst.getInt("amount");
-                portionUnits = nutrientInputFirst.getString("unit");
+                    InputStream is = connection.getInputStream();
+                    InputStreamReader isr = new InputStreamReader(is);
+                    BufferedReader br = new BufferedReader(isr);
 
-
-                //parse individual results
-                for (int i = 0; i < nutrients.length(); i++) {
-                    JSONObject nutrient = nutrients.getJSONObject(i);
-                    JSONObject nutrientData = nutrient.getJSONObject("nutrient");
-
-                    //parse values
-                    String nutrientName = nutrientData.getString("name");
-                    String nutrientUnits = nutrientData.getString("unitName");
-
-                    int nutrientAmount = nutrient.getInt("amount");
-
-
-                    //assign value to nutrients wanted
-                    switch (nutrientName){
-                        case "Energy":
-                            cals = nutrientAmount;
-                            break;
+                    StringBuilder jsonData = new StringBuilder();
+                    String line;
+                    //Read the data
+                    while ((line = br.readLine()) != null) {
+                        jsonData.append(line);
                     }
+
+
+                    //Parse root object
+                    JSONObject rootObject = new JSONObject(jsonData.toString());
+                    //Parse nutrients
+                    JSONArray nutrients = rootObject.getJSONArray("foodNutrients");
+                    String description = rootObject.getString("description");
+
+                    JSONArray nutrientInputs = rootObject.getJSONArray("inputFoods");
+                    JSONObject nutrientInputFirst = nutrientInputs.getJSONObject(0);
+                    portionSize = nutrientInputFirst.getInt("amount");
+                    portionUnits = nutrientInputFirst.getString("unit");
+
+
+                    //parse individual results
+                    for (int x = 0; x < nutrients.length(); x++) {
+                        JSONObject nutrient = nutrients.getJSONObject(x);
+                        JSONObject nutrientData = nutrient.getJSONObject("nutrient");
+
+                        //parse values
+                        String nutrientName = nutrientData.getString("name");
+                        String nutrientUnits = nutrientData.getString("unitName");
+
+                        int nutrientAmount = nutrient.getInt("amount");
+
+
+                        //assign value to nutrients wanted
+                        switch (nutrientName) {
+                            case "Energy":
+                                cals = nutrientAmount;
+                                break;
+                        }
+                    }
+
+                    recipeItems.add(new FoodItemExtended(description, cals, portionSize, portionUnits));
+
+                    connection.disconnect();
                 }
-
-                recipeItems.add(new FoodItemExtended(description, cals, portionSize, portionUnits));
-
-                connection.disconnect();
-
 
 
             } catch (MalformedURLException e) {
@@ -165,6 +167,7 @@ public class RecipeActivity extends AppCompatActivity {
         protected void onPostExecute(List item) {
 
             Toast.makeText(getApplicationContext(), "Ingredients added:" + recipeItems.size(),Toast.LENGTH_SHORT).show();
+            displayIngredients();
 
         }
     }
@@ -189,12 +192,26 @@ public class RecipeActivity extends AppCompatActivity {
         }
     }
     public void displayIngredients(){
-        String[] results = new String[recipeItems.size()];
+
+        results = new String[recipeItems.size()];
+        String[] nutritiants = new String[recipeItems.size()];
+
+        int cals = 0;
+        //String[] results = {"one","two","three","four", "five"};
+        //String[] results = new String[recipeIDs.size()];
+
         for (int i = 0; i < recipeItems.size(); i++ ){
             results[i] = recipeItems.get(i).description;
+            cals+=recipeItems.get(i).calories;
         }
+        nutritiants[0]="Calories: "+cals;
+
+        ListView NL = findViewById(R.id.nutritionList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplication(),android.R.layout.simple_list_item_1,nutritiants);
+        NL.setAdapter(adapter);
+
         ListView IL = findViewById(R.id.ingredientList);
-        ArrayAdapter<String> aa = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, results);
+        ArrayAdapter<String> aa = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, results);
         IL.setAdapter(aa);
     }
 

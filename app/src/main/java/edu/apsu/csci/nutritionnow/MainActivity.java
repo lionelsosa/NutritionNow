@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
             // build url
             Uri.Builder builder = Uri.parse("https://api.nal.usda.gov/fdc/v1/search").buildUpon();
-            builder.appendQueryParameter("api_key", "" );
+            builder.appendQueryParameter("api_key", "BbI0EzK2pxqIyVqnjcCtp5Eat3Om2hHlIjqSRvaI" );
             builder.appendQueryParameter("generalSearchInput", searchText.getText().toString());
             builder.appendQueryParameter("includeDataTypeList", "Survey (FNDDS)");
             search_url = builder.toString();
