@@ -1,5 +1,8 @@
 package edu.apsu.csci.nutritionnow;
 
+// Team Members: Lionel Sosa Estrada, Joshua Foster, and Stephanie Escue
+
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -38,7 +41,13 @@ public class RecipeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recipe);
+        setContentView(R.layout.recipe_activity);
+
+        // Adding logo and title to action bar
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayShowHomeEnabled(true);
+        actionbar.setIcon(R.mipmap.ic_launcher_foreground);
+        actionbar.setTitle(R.string.nutrition_now);
 
         Intent intent = getIntent();
         recipeIDs = intent.getIntegerArrayListExtra("recipeItems");
@@ -95,7 +104,7 @@ public class RecipeActivity extends AppCompatActivity {
 
                 for (int i = 0; i < recipeIDs.size(); i++) {
                     Uri.Builder builder = Uri.parse("https://api.nal.usda.gov/fdc/v1/" + recipeIDs.get(i)).buildUpon();
-                    builder.appendQueryParameter("api_key", "BbI0EzK2pxqIyVqnjcCtp5Eat3Om2hHlIjqSRvaI");
+                    builder.appendQueryParameter("api_key", getResources().getString(R.string.api_key));
                     search_url = builder.toString();
 
 

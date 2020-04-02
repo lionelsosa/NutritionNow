@@ -3,7 +3,17 @@
     <string name="search_button_text">Search</string>
     <string name="search_text_text">Search for...</string>
     <string name="search_title_text">Enter your search terms:</string>
-    <string name="search_text_hint">Enter the food you\'re looking for.</string>
+    <string name="search_text_hint">Enter an ingredient</string>
     <string name="go_recipe_button_text">Go to recipe</string>
     <string name="add_ingredient_button_text">Add Ingredient</string>
+    <string name="instructions">Enter your favorite recipe to find its nutritional value</string>
+    <string name="welcome">Welcome to</string>
+    <string name="citation">Data obtained from:\nU.S. Department of Agriculture,\nAgricultural Research Service.\nFoodData Central, 2019.\nfdc.nal.usda.gov.</string>
+    <string name="get_started">Get Started!</string>
+    <string name="nutrition_now_logo">Nutrition Now Logo</string>
+    <string name="nutrition_now">Nutrition Now</string>
+    <string name="picture_of_food">Picture of Food</string>
+    <string name="vegetables">Vegetables</string>
+    <string name="recipe_ingredients">Recipe Ingredients</string>
+    <string name="nutrition_values">Nutrition Values</string>
 </resources>
