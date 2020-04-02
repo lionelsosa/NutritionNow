@@ -7,21 +7,6 @@
     tools:context=".MainActivity"
     android:background="@drawable/background">
 
-    <EditText
-        android:id="@+id/search_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="25dp"
-        android:layout_marginEnd="25dp"
-        android:autofillHints=""
-        android:ems="10"
-        android:hint="@string/search_text_hint"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/foodImageView" />
-
     <Button
         android:id="@+id/search_button"
         android:layout_width="wrap_content"
@@ -40,8 +25,8 @@
 
     <ListView
         android:id="@+id/results_View"
-        android:layout_width="329dp"
-        android:layout_height="376dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/go_recipe_button"
@@ -50,6 +35,21 @@
         app:layout_constraintTop_toBottomOf="@+id/search_button">
 
     </ListView>
+
+    <EditText
+        android:id="@+id/search_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:autofillHints=""
+        android:ems="10"
+        android:hint="@string/search_text_hint"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/foodImageView" />
 
     <Button
         android:id="@+id/go_recipe_button"
@@ -68,14 +68,11 @@
 
     <ImageView
         android:id="@+id/foodImageView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="211dp"
+        android:layout_height="118dp"
+        android:layout_marginTop="16dp"
         android:contentDescription="@string/picture_of_food"
-        android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/search_text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/healthy_food" />
