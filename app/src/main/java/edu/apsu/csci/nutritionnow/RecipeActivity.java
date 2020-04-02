@@ -38,6 +38,7 @@ public class RecipeActivity extends AppCompatActivity {
     List<FoodItemExtended> recipeItems = new ArrayList<>();
     String[]results;
     String search_url = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -203,7 +204,7 @@ public class RecipeActivity extends AppCompatActivity {
     public void displayIngredients(){
 
         results = new String[recipeItems.size()];
-        String[] nutritiants = new String[recipeItems.size()];
+        String[] nutrients = new String[1];
 
         int cals = 0;
         //String[] results = {"one","two","three","four", "five"};
@@ -213,10 +214,11 @@ public class RecipeActivity extends AppCompatActivity {
             results[i] = recipeItems.get(i).description;
             cals+=recipeItems.get(i).calories;
         }
-        nutritiants[0]="Calories: "+cals;
+
+        nutrients[0]= "Calories: " + cals;
 
         ListView NL = findViewById(R.id.nutritionList);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplication(),android.R.layout.simple_list_item_1,nutritiants);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplication(),android.R.layout.simple_list_item_1,nutrients);
         NL.setAdapter(adapter);
 
         ListView IL = findViewById(R.id.ingredientList);
