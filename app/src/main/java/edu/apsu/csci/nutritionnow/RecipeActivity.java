@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -100,6 +101,10 @@ public class RecipeActivity extends AppCompatActivity {
 
             try {
                 int cals=0;
+                int protein=0;
+                int fiber=0;
+                int fat=0;
+                int carbs=0;
                 String portionUnits = "";
                 int portionSize = 0;
 
@@ -153,10 +158,22 @@ public class RecipeActivity extends AppCompatActivity {
                             case "Energy":
                                 cals = nutrientAmount;
                                 break;
+                            case "Protein":
+                                protein = nutrientAmount;
+                                break;
+                            case "Total lipid (fat)":
+                                fat = nutrientAmount;
+                                break;
+                            case "Carbohydrate, by difference":
+                                carbs = nutrientAmount;
+                                break;
+                            case "Fiber, total dietary":
+                                fiber = nutrientAmount;
+                                break;
                         }
                     }
 
-                    recipeItems.add(new FoodItemExtended(description, cals, portionSize, portionUnits));
+                    recipeItems.add(new FoodItemExtended(description, cals, portionSize, portionUnits, protein, fat, carbs, fiber));
 
                     connection.disconnect();
                 }
@@ -186,6 +203,10 @@ public class RecipeActivity extends AppCompatActivity {
         int calories;
         int grams;
         String units;
+        int Protein;
+        int Fat;
+        int Carbs;
+        int Fiber;
 
         public FoodItemExtended(){
             description = "";
@@ -194,28 +215,45 @@ public class RecipeActivity extends AppCompatActivity {
             units = "";
         }
 
-        public FoodItemExtended(String des, int cals, int gs, String us){
+        public FoodItemExtended(String des, int cals, int gs, String us, int pro, int fats, int carbs, int fiber){
             description = des;
             calories = cals;
             grams = gs;
             units = us;
+            Protein = pro;
+            Fat = fats;
+            Carbs = carbs;
+            Fiber = fiber;
         }
     }
     public void displayIngredients(){
 
         results = new String[recipeItems.size()];
-        String[] nutrients = new String[1];
+        String[] nutrients = new String[5];
 
         int cals = 0;
+        int pros = 0;
+        int fat = 0;
+        int carbs = 0;
+        int fib = 0;
         //String[] results = {"one","two","three","four", "five"};
         //String[] results = new String[recipeIDs.size()];
 
         for (int i = 0; i < recipeItems.size(); i++ ){
             results[i] = recipeItems.get(i).description;
             cals+=recipeItems.get(i).calories;
+            pros+=recipeItems.get(i).Protein;
+            fat+=recipeItems.get(i).Fat;
+            carbs+=recipeItems.get(i).Carbs;
+            fib+=recipeItems.get(i).Fiber;
         }
 
         nutrients[0]= "Calories: " + cals;
+        nutrients[1]="Fat: "+fat;
+        nutrients[2]="Protein: "+pros;
+        nutrients[3]="Carbohydrates: "+carbs;
+        nutrients[4]="Fiber: "+fib;
+
 
         ListView NL = findViewById(R.id.nutritionList);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplication(),android.R.layout.simple_list_item_1,nutrients);
