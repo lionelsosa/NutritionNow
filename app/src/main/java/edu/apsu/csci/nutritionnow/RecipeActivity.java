@@ -35,6 +35,8 @@ import javax.net.ssl.HttpsURLConnection;
 public class RecipeActivity extends AppCompatActivity {
 
     ArrayList<Integer> recipeIDs = new ArrayList<>();
+    ArrayList<Integer> recipeWeights = new ArrayList<>();
+
     //ArrayList<String> results = new ArrayList<>();
     List<FoodItemExtended> recipeItems = new ArrayList<>();
     String[]results;
@@ -53,6 +55,7 @@ public class RecipeActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         recipeIDs = intent.getIntegerArrayListExtra("recipeItems");
+        recipeWeights = intent.getIntegerArrayListExtra("recipeItemsWeight");
 
 
         downloadRecipeItem = new RecipeItemsDownload();
@@ -135,10 +138,8 @@ public class RecipeActivity extends AppCompatActivity {
                     JSONArray nutrients = rootObject.getJSONArray("foodNutrients");
                     String description = rootObject.getString("description");
 
-                    JSONArray nutrientInputs = rootObject.getJSONArray("inputFoods");
-                    JSONObject nutrientInputFirst = nutrientInputs.getJSONObject(0);
-                    portionSize = nutrientInputFirst.getInt("amount");
-                    portionUnits = nutrientInputFirst.getString("unit");
+                    portionSize = recipeWeights.get(i);
+                    portionUnits = "grams";
 
 
                     //parse individual results
@@ -156,7 +157,7 @@ public class RecipeActivity extends AppCompatActivity {
                         //assign value to nutrients wanted
                         switch (nutrientName) {
                             case "Energy":
-                                cals = nutrientAmount;
+                                cals = nutrientAmount * portionSize / 100;
                                 break;
                             case "Protein":
                                 protein = nutrientAmount;
@@ -193,7 +194,6 @@ public class RecipeActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(List item) {
 
-            Toast.makeText(getApplicationContext(), "Ingredients added:" + recipeItems.size(),Toast.LENGTH_SHORT).show();
             displayIngredients();
 
         }
@@ -248,11 +248,11 @@ public class RecipeActivity extends AppCompatActivity {
             fib+=recipeItems.get(i).Fiber;
         }
 
-        nutrients[0]= "Calories: " + cals;
-        nutrients[1]="Fat: "+fat;
-        nutrients[2]="Protein: "+pros;
-        nutrients[3]="Carbohydrates: "+carbs;
-        nutrients[4]="Fiber: "+fib;
+        nutrients[0]= "Energy: " + cals + " kcals";
+        nutrients[1]="Fat: "+fat + " grams";
+        nutrients[2]="Protein: "+pros+ " grams";
+        nutrients[3]="Carbohydrates: "+carbs+ " grams";
+        nutrients[4]="Fiber: "+fib+ " grams";
 
 
         ListView NL = findViewById(R.id.nutritionList);

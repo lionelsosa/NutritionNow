@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -35,6 +36,8 @@ import javax.net.ssl.HttpsURLConnection;
 public class SearchActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     List<FoodItem> items = new ArrayList<>();
     ArrayList<Integer> recipeItems = new ArrayList<>();
+    ArrayList<Integer> recipeItemsWeight = new ArrayList<>();
+
     String search_url;
 
     @Override
@@ -78,6 +81,7 @@ public class SearchActivity extends AppCompatActivity implements AdapterView.OnI
         if (v == findViewById(R.id.go_recipe_button)) {
             Intent intent = new Intent(getBaseContext(),RecipeActivity.class);
             intent.putIntegerArrayListExtra("recipeItems", recipeItems);
+            intent.putIntegerArrayListExtra("recipeItemsWeight", recipeItemsWeight);
             startActivity(intent);
         }
 
@@ -87,10 +91,50 @@ public class SearchActivity extends AppCompatActivity implements AdapterView.OnI
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 
         final int pos = position;
+
+// get prompts.xml view
+        LayoutInflater li = LayoutInflater.from(this);
+        View promptsView = li.inflate(R.layout.ingredient_dialog, null);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        // set prompts.xml to alertdialog builder
+        alertDialogBuilder.setView(promptsView);
+
+        final EditText userInput = (EditText) promptsView
+                .findViewById(R.id.editTextDialogUserInput);
+
+        // set dialog message
+        alertDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                // get user input and set it to result
+                                // edit text
+                                recipeItemsWeight.add(Integer.parseInt(userInput.getText().toString()));
+                                recipeItems.add(items.get(pos).id);
+                            }
+                        })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
+
+
+        /*
         // Build an AlertDialog
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Confirm your choice");
-        builder.setMessage("Add " + items.get(position).description + "(ID " + items.get(position).id + ") to the recipe?");
+        builder.setMessage("Add 100 grams of " + items.get(position).description + " to the recipe?");
 
         // Set the alert dialog yes button click listener
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -111,7 +155,7 @@ public class SearchActivity extends AppCompatActivity implements AdapterView.OnI
 
         AlertDialog dialog = builder.create();
         // Display the alert dialog on interface
-        dialog.show();
+        dialog.show();*/
     }
 
     private class SearchResultsDownload extends AsyncTask<Void, Void, List> {
