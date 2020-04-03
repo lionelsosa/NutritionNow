@@ -3,8 +3,10 @@ package edu.apsu.csci.nutritionnow;
 // Team Members: Lionel Sosa Estrada, Joshua Foster, and Stephanie Escue
 
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -12,6 +14,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -32,7 +35,7 @@ import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class RecipeActivity extends AppCompatActivity {
+public class RecipeActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     ArrayList<Integer> recipeIDs = new ArrayList<>();
     ArrayList<Integer> recipeWeights = new ArrayList<>();
@@ -57,6 +60,8 @@ public class RecipeActivity extends AppCompatActivity {
         recipeIDs = intent.getIntegerArrayListExtra("recipeItems");
         recipeWeights = intent.getIntegerArrayListExtra("recipeItemsWeight");
 
+        ListView listView = (ListView) findViewById(R.id.ingredientList);
+        listView.setOnItemClickListener(this);
 
         downloadRecipeItem = new RecipeItemsDownload();
         downloadRecipeItem.execute();
@@ -87,16 +92,39 @@ public class RecipeActivity extends AppCompatActivity {
 
     private RecipeItemsDownload downloadRecipeItem; //second API
 
-    private void getIngredient(int id){
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+
+        final int pos = position;
+
+        // Build an AlertDialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Remove ingredient");
+        builder.setMessage("Do you want to remove " + recipeItems.get(position).description + " from the recipe?");
+
+        // Set the alert dialog yes button click listener
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                recipeItems.remove(pos);
+                displayIngredients();
+            }
+        });
+
+        // Set the alert dialog no button click listener
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //Toast.makeText(getApplicationContext(),
+                //        "Food was not added",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        // Display the alert dialog on interface
+        dialog.show();
 
 
     }
-
-    public void parseIngredients(){
-
-
-    }
-
     private class RecipeItemsDownload extends AsyncTask<Void, Void, List> {
 
         @Override

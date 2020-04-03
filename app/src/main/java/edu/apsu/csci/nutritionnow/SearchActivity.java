@@ -130,32 +130,6 @@ public class SearchActivity extends AppCompatActivity implements AdapterView.OnI
         alertDialog.show();
 
 
-        /*
-        // Build an AlertDialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Confirm your choice");
-        builder.setMessage("Add 100 grams of " + items.get(position).description + " to the recipe?");
-
-        // Set the alert dialog yes button click listener
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                recipeItems.add(items.get(pos).id);
-            }
-        });
-
-        // Set the alert dialog no button click listener
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //Toast.makeText(getApplicationContext(),
-                //        "Food was not added",Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        AlertDialog dialog = builder.create();
-        // Display the alert dialog on interface
-        dialog.show();*/
     }
 
     private class SearchResultsDownload extends AsyncTask<Void, Void, List> {
